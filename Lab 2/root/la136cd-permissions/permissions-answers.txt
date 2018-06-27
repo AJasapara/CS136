@@ -1,0 +1,17 @@
+Answer the questions from the lab manual in this file.
+
+1. Yes they can if they know the names of the files and use cat. In order to stop this, the files cannot be executable or readable.
+
+2. It means that it can be executed. In the case of directories, this means that the directory can be opened (can cd into).
+
+3. tps since it is the owner.
+
+4. No, since they have no permissions/access to the directory. (I'm assuming this question excludes tps from the non-wheel employees because obviously tps has total access to the directory).
+
+5. It means they have no permissions/access to the directory so they also have no privileges over the files in that directory.
+
+6. No, it isn't safe because larry (or someone posing as him) can not only access these programs from any host, but use an exploit as a sudoer to modify the respective environment variables to let him execute any program. While it is unsafe, there does not seem to be a better alternative.
+
+7. Yes, it is safe because because he would be restricted access only to the restart command for the server since there are no unknown vulnerabilities.
+
+8. Yes, if they utilize the time period between entering the password and interaction with the shell. The shell is created from /etc/passwd which they could modify for additional permissions, and the user is logged in with /etc/profile so they could modify this file to gain sudo access.

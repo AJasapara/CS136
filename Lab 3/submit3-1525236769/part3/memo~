@@ -1,0 +1,5 @@
+1. The flaw in their application was a susceptibility to SQL injections because they did not validate user input. So it is easy to insert malicious SQL code to gain access to accounts, transfer funds, and wreak havoc!
+
+2. I fixed the flaw by first treating all of the user input as strings so it could not be used for SQL injections. I also verified that numeric fields only had numbers, otherwise triggering a fatal error, since that would indicate an attempt to breach security.
+
+3.1. 

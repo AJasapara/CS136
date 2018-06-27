@@ -1,0 +1,18 @@
+--- webserver.c	2017-12-21 14:22:26.551055000 -0800
++++ webserver-patched.c	2018-04-30 23:53:06.652476745 -0700
+@@ -89,9 +89,12 @@
+     hdrptr += strlen(searchstr); 
+     if (hdrend = strstr(hdrptr, "\r\n")) { 
+ 			char hdrval[1024]; // temporary return value
+-			memcpy((char *)hdrval, hdrptr, (hdrend - hdrptr));
+-			hdrval[hdrend - hdrptr] = '\0'; // tack null onto end of header value
+-			int hdrvallen = strlen(hdrval);
++			int hdrvallen = hdrend - hdrptr;
++			if (hdrvallen > 1024)
++			  hdrvallen = 1024;
++			memcpy((char *)hdrval, hdrptr, hdrvallen);
++			hdrval[hdrvallen] = '\0'; // tack null onto end of header value
++			hdrvallen = strlen(hdrval);
+      	retval = (char *)malloc((hdrvallen + 1) * sizeof(char)); // malloc a space for retval
+       strcpy(retval, (char *)hdrval);
+     } else {

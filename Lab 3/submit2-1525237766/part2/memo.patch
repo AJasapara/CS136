@@ -1,0 +1,23 @@
+--- memo.pl	2018-05-01 16:43:48.568797560 -0700
++++ memo-patched.pl	2018-05-01 16:52:57.459637205 -0700
+@@ -26,8 +26,7 @@
+ 
+ # glob through the homedirs for an array of paths to memos sorted by date
+ sub list_memo_selector {
+-	my @memos = </home/*/memo/*>; # all regular users
+-	push (@memos, </root/memo/*>); # special memos from root
++    my @memos = </home/memo-usergroup/memo/*>;
+ 	foreach (@memos) {
+ 		$_ =~ m#^.+/([^/]+)$#; # regex extract filename
+ 		my $temp = $1;
+@@ -56,6 +55,10 @@
+ } else { # there is a memo selected
+ 	list_memo_selector();
+ 	my $memo = param('memo');
++	if($memo !~ m#^\/home\/memo-usergroup\/memo\/.*$#) {
++	    $memo = "";
++	}
++	$memo =~ s/\.\.\///g;
+ 	my $author = "root";
+ 	my @stat = stat $memo;
+ 	my $date = localtime $stat[9];

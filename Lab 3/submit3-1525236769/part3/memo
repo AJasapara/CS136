@@ -1,0 +1,9 @@
+1. The flaw in their application was a susceptibility to SQL injections because they did not validate user input. So it is easy to insert malicious SQL code to gain access to accounts, transfer funds, and wreak havoc!
+
+2. I fixed the flaw by first treating all of the user input as strings so it could not be used for SQL injections. I also verified that numeric fields only had numbers, otherwise triggering a fatal error, since that would indicate an attempt to breach security.
+
+3.1. The breach was very serious. Everyone's accounts and balances were susceptible to these injections, and all their money could have been transferred out. The attackers may be able to gain root access by getting MySQL root access and executing a remote shell. However, if the MySQL application does not have sudo capabilities itself, the attackers wouldn't be able to gain root access.
+
+3.2. As mentioned above, input validation to prevent SQL injections would go a long way to secure the server. Rebooting the server and checking logs would also be a good tool to prevent unauthorized access.
+
+3.3. This exploit was interesting in that we could insert SQL code to gain access to the database. It showed how easy it is sometimes to get private information, and helped me realize that I should be wary about trusting these softwares sometimes.

@@ -1,0 +1,30 @@
+Name: Arpit Jasapara
+Email: jasapara.arpit@gmail.com
+Username: la136cd
+
+Images:
+Description: Forbidden Planet
+Path: /usr/share/pixmaps/xbzf136INTRO-1.jpg
+
+Description: Godzilla
+Path: /dev/136intro-2jjaj.JPEG
+
+Description: It Came From Outer Space
+Path: /var/log/136intro-3.jpg
+
+Description: The Fly
+Path: /etc/wuer136intro-4.JPG
+
+Description: 2001 A Space Odyssey
+Path: /.hidden/asdf136Intro-5kqlw.jpeg
+
+
+Questions:
+What goes in the /var directory on a UNIX computer?
+/var is short for variable so it contains variable data files (files that change often) such as temporary files and logs.
+
+What is the /dev directory for on a UNIX computer?
+The /dev directory is for all UNIX devices so it holds special device files for each device.
+
+On your experimental node, find out the "vendor id" of the experimental node's CPU model.
+vendor_id	     : GenuineIntel

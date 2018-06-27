@@ -1,0 +1,7 @@
+1. The security flaw that I found was a buffer overflow susceptibility in webserver.c where the get_header() method tried to copy the header value into a fixed-length buffer of size 1024. Thus, all I had to do was enter a very long string of data (I even copied my entire payload twice to be safe) to crash the webserver. So my exploit makes, installs, and starts the server, and then uses netcat to give it this massive payload to crash the server. I fixed this exploit by adding a simple check to make sure the header length is not greater than 1024, and if it is, then the header is cut off at 1024, thus preventing any buffer overflows.
+
+2.1. The breach is pretty serious. If instead of random gibberish, I entered malicious code (such as changing the return address), then I would have access to the entire system and could wreak serious havoc.
+
+2.2. The recovery plan for the server would be the same as my patch: check the bounds for all input. This would make sure that the buffer cannot be overflown by the input and fix this flaw.
+
+2.3. This is a cool exploit, similar to the stack smashing we did in CS33. 

@@ -1,0 +1,167 @@
+--- FCCU.php	2017-12-21 14:22:26.488405000 -0800
++++ FCCU-patched.php	2018-05-01 21:37:32.012944502 -0700
+@@ -28,12 +28,17 @@
+ if (!$PARAM['id'] || !$PARAM['password']) {
+ 	login();
+ } else { // otherwise, attempt to authenticate
+-	$id = $PARAM['id'];
+-	$password = $PARAM['password'];
+-
+-        $mysqli = new mysqli($dbhost, $dbuser, $dbpass, $dbname);
+-   
+-   	$query = "SELECT * FROM accounts WHERE id = $id AND password = '$password'";
++   $id = $PARAM['id'];
++   $password = $PARAM['password'];
++   $mysqli = new mysqli($dbhost, $dbuser, $dbpass, $dbname);
++   if(!is_numeric($id)) {
++   $query = "";
++   }
++   else{
++   $id = mysql_real_escape_string($id);
++   $password = mysql_real_escape_string($password);
++   $query = "SELECT * FROM accounts WHERE id = $id AND password = '$password'";
++   }
+ 	debug($query);
+ 	$result = $mysqli->query($query) or die($mysqli->error);
+ 	$row = $result->fetch_array(); // there should be only one row
+@@ -54,18 +59,18 @@
+ 		if ($PARAM['action'] == 'Transfer Money') {
+ 			transfer_funds($id, 
+ 				       $password,
+-			               $PARAM['transfer_to'], 
+-				       $PARAM['transfer_amount']);
++			               mysql_real_escape_string($PARAM['transfer_to']), 
++				       mysql_real_escape_string($PARAM['transfer_amount']));
+ 		} elseif ($PARAM['action'] == 'Wire Money') {
+ 			wire_funds($id,
+ 			            $password,
+-		                    $PARAM['routing'],
+-			            $PARAM['wire_acct'],
+-			            $PARAM['wire_amount']);
++		                    mysql_real_escape_string($PARAM['routing']),
++			            mysql_real_escape_string($PARAM['wire_acct']),
++			            mysql_real_escape_string($PARAM['wire_amount']));
+ 		} elseif ($PARAM['action'] == 'Withdraw Money') {
+ 			withdraw_cash($id,
+ 			              $password,
+-		                      $PARAM['withdraw_amount']);
++		                      mysql_real_escape_string($PARAM['withdraw_amount']));
+ 		}
+ 
+ 		// normal output
+@@ -121,19 +126,28 @@
+ 
+ function withdraw_cash($id, $password, $amount) {
+ 
+-	global $dbhost, $dbuser, $dbpass, $dbname;
+-	
+-	$amount = floor($amount);
++global $dbhost, $dbuser, $dbpass, $dbname;
++
++if(!is_numeric($amount)) {
++$query = "";
++$amount = -1;
++}
++else{
++$amount = floor($amount);
++$query = "SELECT bal FROM accounts WHERE password = '$password' AND id = $id";
++}
+ 
+         $mysqli = new mysqli($dbhost, $dbuser, $dbpass, $dbname);
+-   
+-	$query = "SELECT bal FROM accounts WHERE password = '$password' AND id = $id";
+ 	debug($query);
+ 	$result = $mysqli->query($query) or die($mysqli->error());
+-        $row = $result->fetch_array(); // there should be only one row
++$row = $result->fetch_array(); // there should be only one row
+ 
+-	$giver_has = $row[0];
+-	
++if($row){
++$giver_has = $row[0];
++}
++else{
++$giver_has = -1;
++}
+ 	if ($amount > 0 && $giver_has >= $amount) {
+ 		$giver_has = $giver_has - $amount; // there's a problem here but it's not SQL Injection...
+ 		pretend("withdraw cash", $amount);
+@@ -151,16 +165,26 @@
+ function wire_funds($id, $password,  $bank, $account, $amount) {
+ 
+ 	global $dbhost, $dbuser, $dbpass, $dbname;
+-	
+-	$amount = floor($amount);
+ 
++		      if(!is_numeric($bank) || !is_numeric($account) || !is_numeric($amount)) {
++		      $query = "";
++		      $amount = -1;
++		      }
++		      else{
++		      $amount = floor($amount);
++		      $query = "SELECT bal FROM accounts WHERE password = '$password' AND id = $id";
++		      }
+         $mysqli = new mysqli($dbhost, $dbuser, $dbpass, $dbname);
+-   
+-	$query = "SELECT bal FROM accounts WHERE password = '$password' AND id = $id";
+ 	debug($query);
+ 	$result = $mysqli->query($query) or die($mysqli->error);
+         $row = $result->fetch_array(); // there should be only one row
+-	$giver_has = $row[0];
++
++		      if($row){
++		      $giver_has = $row[0];
++		      }
++		      else{
++		      $giver_has = -1;
++		      }
+ 	
+ 	if ($amount > 0 && $giver_has >= $amount && $bank && $account) {
+ 		$giver_has = $giver_has - $amount; // there's a problem here but it's not SQL Injection...
+@@ -183,22 +207,36 @@
+ function transfer_funds($giver_id, $password, $recipient, $amount) {
+ 
+ 	global $dbhost, $dbuser, $dbpass, $dbname;
+-	
+-	$amount = floor($amount);
+-	$recipient_id = name_to_id($recipient);
+ 
++		      if(!is_numeric($amount)) {
++		      $query = "";
++		      $amount = -1;
++		      }
++		      else{
++		      $amount = floor($amount);
++		      $query = "SELECT bal FROM accounts WHERE id = $giver_id OR id = $recipient_id";
++		      }
++	$recipient_id = name_to_id($recipient);
+ 	$mysqli = new mysqli($dbhost, $dbuser, $dbpass, $dbname);
+-   
+-	$query = "SELECT bal FROM accounts WHERE id = $giver_id OR id = $recipient_id";
+ 	debug($query);
+ 	$result = $mysqli->query($query) or die($mysqli->error);
+ 	$row = $result->fetch_array(); // there should be only one row
+-		      
+-	$recipient_has = $row[0];
++		      if($row){
++		      $recipient_has = $row[0];
++		      }
++		      else{
++		      $recipient_has = -1;
++		      }
+ 	$row =  $result->fetch_array();
+-	$giver_has = $row[0];
+-	debug("$giver_has, $recipient_has");
+-	
++
++		      if($row){
++		      $giver_has = $row[0];
++		      debug("$giver_has, $recipient_has");
++		      }
++		      else{
++		      $giver_has = -1;
++		      }
++		      
+ 	if ($amount > 0 && $giver_has >= $amount && $recipient_has) {
+ 		$giver_has = $giver_has - $amount; // there's a problem here but it's not SQL Injection...
+ 		$recipient_has = $recipient_has + $amount; // does anyone know what it is?
